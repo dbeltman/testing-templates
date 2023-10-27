@@ -51,7 +51,7 @@ spec:
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
-              - github.com
+              - gitea-http.gitea.svc.cluster.local:3000
   steps:
     - id: template
       name: Fetch Manifests + Template
@@ -71,7 +71,7 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ["github.com"]
+        allowedHosts: ["gitea-http.gitea.svc.cluster.local:3000"]
         description: ${{ parameters.description }}
         repoUrl: ${{ parameters.repoUrl }}
 
