@@ -1,0 +1,92 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: app-template
+  title: Create new k8s service
+  description: Create a repo with standard configuration, made for microservices on k8s
+  tags:
+    - app
+spec:
+  owner: integration
+  type: service
+
+  parameters:
+    #Change parameters
+    - title: Provide some simple information
+      required:
+        - name
+        - description
+        - owner
+        - namespace
+      properties:
+        name:
+          title: Name
+          type: string
+          description: "The name of your service (e.g assortment)"
+          ui:field: EntityNamePicker
+        description:
+          title: Description
+          type: string
+          description: Description for the service (e.g This service does awesome things)
+        owner:
+          title: Owner
+          type: string
+          description: (Abbreviated) Team name that owns the service (e.g int for integration)
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group          
+        namespace:
+          title: Namespace
+          type: string
+          description: "Namespace where your app will reside (format: <service>-<team>-project, e.g assortment-int-project)"
+          ui:field: EntityNamePicker          
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+  steps:
+    - id: template
+      name: Fetch Manifests + Template
+      action: fetch:template
+      input:
+        url: ./manifests
+        copyWithoutRender:
+          - .github/workflows/*
+        values:
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          name: ${{ parameters.name }}
+          namespace: ${{ parameters.namespace }}          
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ["github.com"]
+        description: ${{ parameters.description }}
+        repoUrl: ${{ parameters.repoUrl }}
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: "/catalog-info.yaml"
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
+## Add additional templates below
