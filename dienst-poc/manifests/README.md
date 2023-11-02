@@ -1,0 +1,1 @@
+Test component deploying nginx pods for example purposes
