@@ -39,7 +39,7 @@ spec:
         namespace:
           title: Namespace
           type: string
-          description: Unique namespace of the app
+          description: Target namespace of the app
           ui:field: EntityNamePicker      
     - title: Choose a location
       required:
@@ -65,6 +65,7 @@ spec:
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
+          namespace: ${{ parameters.namespace }}
 
     - id: publish
       name: Publish
@@ -74,16 +75,16 @@ spec:
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
 
-    - id: get_azure_repo_id
-      name: Get Azure Repo
-      action: azure:repository:get
-      input:
-      ## TODO Remove hardcoded
-        # organization: ${{ parameters.organization }}
-        organization: simacsupport
-        # project: ${{ parameters.project }}
-        project: Microservice Team
-        repositoryName: ${{ parameters.repositoryName }}
+    # - id: get_azure_repo_id
+    #   name: Get Azure Repo
+    #   action: azure:repository:get
+    #   input:
+    #   ## TODO Remove hardcoded
+    #     # organization: ${{ parameters.organization }}
+    #     organization: simacsupport
+    #     # project: ${{ parameters.project }}
+    #     project: Microservice Team
+    #     repositoryName: ${{ parameters.repositoryName }}
 
     - id: register
       name: Register
